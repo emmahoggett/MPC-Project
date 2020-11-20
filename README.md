@@ -49,10 +49,9 @@ The folder `litterature` contains scientific papers that inspired our project.
 * [Resources](https://www.https://www.aicrowd.com/challenges/epfl-ml-recommender-system-2019/dataset_files): Datas for the training and testing.
 
 ### Authors
-* Members: 
-** Balestrini Théophile : theophile.balestrini@epfl.ch
-** Durand Mathilde : mathilde.durand@epfl.ch
-** Hoggett Emma : emma.hoggett@epfl.ch
+* Balestrini Théophile : theophile.balestrini@epfl.ch
+* Durand Mathilde : mathilde.durand@epfl.ch
+* Hoggett Emma : emma.hoggett@epfl.ch
 
 ### Project Status
 The project was submitted on the 12 January 2021, as part of the [Model Predictive Control](https://www.epfl.ch/labs/la/page-53049-en-html/teaching-mpc/) course.
