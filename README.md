@@ -54,4 +54,4 @@ The folder `litterature` contains scientific papers that inspired our project.
 * Hoggett Emma : emma.hoggett@epfl.ch
 
 ### Project Status
-The project was submitted on the 12 January 2021, as part of the [Model Predictive Control](https://www.epfl.ch/labs/la/page-53049-en-html/teaching-mpc/) course.
+The project was submitted on the 8 January 2021, as part of the [Model Predictive Control](https://www.epfl.ch/labs/la/page-53049-en-html/teaching-mpc/) course.
