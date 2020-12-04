@@ -34,7 +34,7 @@ classdef MPC_Control_z < MPC_Control
       d_est = sdpvar(1);
 
       % SET THE HORIZON HERE
-      N = ...
+      N = 8;
       
       % Predicted state and input trajectories
       x = sdpvar(n, N);
@@ -50,8 +50,32 @@ classdef MPC_Control_z < MPC_Control
       % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
       con = [];
       obj = 0;
+      
+      
+      % Input constraints 0<=u<=1.5
+      m = [0 1.5 0 1.5 0 1.5  0 1.5]'; 
+      M = [-1 0 0 0;1 0 0 0;...
+           0 -1 0 0;0 1 0 0;...
+           0 0 -1 0;0 0 1 0;...
+           0 0 0 -1;0 0 0 1];
+       
+      % State constraints |alpha| <= 0.035 & |beta| <= 0.035
+      F = [1 0 0 0 0 0 0 0 0 0 0 0;...
+           -1 0 0 0 0 0 0 0 0 0 0 0;...
+           0 1 0 0 0 0 0 0 0 0 0 0;...
+           0 -1 0 0 0 0 0 0 0 0 0 0];
+      f = ones(4,1)*0.035;
 
       
+      con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (M*u(:,1) <= m);
+      obj = u(:,1)'*R*u(:,1);
+      
+      for i = 2:N-1
+        con = con + (x(:,i+1) == mpc.A*x(:,i) + mpc.B*u(:,i));
+        con = con + (F*x(:,i) <= f) + (M*u(:,i) <= m);
+        obj = obj + x(:,i)'*Q*x(:,i) + u(:,i)'*R*u(:,i);
+      end
+      obj = obj + x(:,N)'*P*x(:,N);
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
