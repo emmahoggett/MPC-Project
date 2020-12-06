@@ -34,7 +34,7 @@ classdef MPC_Control_z < MPC_Control
       d_est = sdpvar(1);
 
       % SET THE HORIZON HERE
-      N = 10;
+      N = 15;
       
       % Predicted state and input trajectories
       x = sdpvar(n, N);
@@ -53,11 +53,11 @@ classdef MPC_Control_z < MPC_Control
       
       
       % Problem parameters
-      %%% Tuni
-      %%% A revoir - Justifier %%%
+      %%% Tuning parameters
       Q = mpc.C'*mpc.C;
       R = 10*eye(h);
-      %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      
+      %%% Constraints -0.2 <= F <= 0.3
       h = [0.3 0.2]'; 
       H = [1 -1]';
       
@@ -91,7 +91,7 @@ classdef MPC_Control_z < MPC_Control
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       
       
-      ctrl_opt = optimizer(con, obj, sdpsettings('solver','gurobi'), ...
+      ctrl_opt = optimizer(con, obj, sdpsettings('solver','MOSEK'), ...
         {x(:,1), xs, us, d_est}, u(:,1));
     end
     
@@ -131,7 +131,7 @@ classdef MPC_Control_z < MPC_Control
       
       
       % Compute the steady-state target
-      target_opt = optimizer(con, obj, sdpsettings('solver', 'gurobi'), {ref, d_est}, {xs, us});
+      target_opt = optimizer(con, obj, sdpsettings('solver', 'MOSEK'), {ref, d_est}, {xs, us});
     end
     
     

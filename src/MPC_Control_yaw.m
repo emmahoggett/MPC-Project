@@ -20,7 +20,7 @@ classdef MPC_Control_yaw < MPC_Control
       us = sdpvar(m, 1);
       
       % SET THE HORIZON HERE
-      N = ...
+      N = 15;
       
       % Predicted state and input trajectories
       x = sdpvar(n, N);
@@ -37,12 +37,47 @@ classdef MPC_Control_yaw < MPC_Control
       con = [];
       obj = 0;
 
+            
+      % Problem parameters
+      %%% Tuning parameters
+      Q = mpc.C'*mpc.C;
+      R = 10*eye(h);
+      
+      %%% Constraints -0.2 <= M_yaw <= 0.3
+      h = [0.2 0.2]'; 
+      H = [1 -1]';
+      
+      % Compute LQR for unconstrained system
+      [K,P,~] = dlqr(mpc.A, mpc.B, Q, R);
+      K = - K; % Note that matlab defines K as -K
+      
+      % Compute the maximal invariant set in closed loop
+      Acl = mpc.A+mpc.B*K;
+      Xf = Polyhedron([H*K],[h]);
+      while 1
+          Xfprev = Xf;
+          F = Xf.A; f = Xf.b;
+          Xf =  Polyhedron([F; F*Acl], [f;f]);
+          if Xf == Xfprev, break; end  
+      end
+      
+      % Constraints and objective
+      con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (H*u(:,1) <= h);
+      obj = u(:,1)'*R*u(:,1);
+      
+      for i = 2:N-1
+        con = con + (x(:,i+1) == mpc.A*x(:,i) + mpc.B*u(:,i));
+        con = con + (H*u(:,i) <= h);
+        obj = obj + x(:,i)'*Q*x(:,i) + u(:,i)'*R*u(:,i);
+      end
+      obj = obj + x(:,N)'*P*x(:,N);
+      con = con + (F*x(:,N) <= f);
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       
       
-      ctrl_opt = optimizer(con, obj, sdpsettings('solver','gurobi'), ...
+      ctrl_opt = optimizer(con, obj, sdpsettings('solver','MOSEK'), ...
         {x(:,1), xs, us}, u(:,1));
     end
     
@@ -78,7 +113,7 @@ classdef MPC_Control_yaw < MPC_Control
       
       
       % Compute the steady-state target
-      target_opt = optimizer(con, obj, sdpsettings('solver', 'gurobi'), ref, {xs, us});
+      target_opt = optimizer(con, obj, sdpsettings('solver', 'MOSEK'), ref, {xs, us});
       
     end
   end

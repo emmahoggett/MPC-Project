@@ -26,4 +26,18 @@ sys_transformed = sys * inv(quad.T) % New system is A * x + B * inv(T) * v
 
 %% Todo 2.3 %%
 
-[sys x, sys y, sys z, sys yaw] = quad.decompose(sys, xs, us)
+[sys_x, sys_y, sys_z, sys_yaw] = quad.decompose(sys, xs, us)
+
+%% Todo 3.1 %%
+
+Ts      = 1/5;
+quad    = Quad(Ts);
+[xs, us]= quad.trim();
+sys     = quad.linearize(xs, us);
+[sys_x, sys_y, sys_z, sys_yaw] = quad.decompose(sys, xs, us);
+
+% Design MPC controller
+mpc_z = MPC_Control_z(sys_z, Ts);
+
+% Get control inputs with
+% uz = mpc_z.get_u(z)
