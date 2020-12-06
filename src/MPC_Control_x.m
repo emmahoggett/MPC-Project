@@ -20,7 +20,7 @@ classdef MPC_Control_x < MPC_Control
       us = sdpvar(m, 1);
       
       % SET THE HORIZON HERE
-      N = ...
+      N = 40;
       
       % Predicted state and input trajectories
       x = sdpvar(n, N);
@@ -42,7 +42,7 @@ classdef MPC_Control_x < MPC_Control
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       
       
-      ctrl_opt = optimizer(con, obj, sdpsettings('solver','gurobi'), ...
+      ctrl_opt = optimizer(con, obj, sdpsettings('solver','MOSEK'), ...
         {x(:,1), xs, us}, u(:,1));
     end
     
@@ -77,7 +77,7 @@ classdef MPC_Control_x < MPC_Control
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       
       % Compute the steady-state target
-      target_opt = optimizer(con, obj, sdpsettings('solver', 'gurobi'), ref, {xs, us});
+      target_opt = optimizer(con, obj, sdpsettings('solver', 'MOSEK'), ref, {xs, us});
       
     end
   end

@@ -20,7 +20,7 @@ classdef MPC_Control_yaw < MPC_Control
       us = sdpvar(m, 1);
       
       % SET THE HORIZON HERE
-      N = 15;
+      N = 40;
       
       % Predicted state and input trajectories
       x = sdpvar(n, N);
@@ -43,7 +43,8 @@ classdef MPC_Control_yaw < MPC_Control
       Q = mpc.C'*mpc.C;
       R = 10*eye(h);
       
-      %%% Constraints -0.2 <= M_yaw <= 0.3
+      
+      %%% Constraints -0.2 <= M_yaw <= 0.2
       h = [0.2 0.2]'; 
       H = [1 -1]';
       
@@ -106,6 +107,19 @@ classdef MPC_Control_yaw < MPC_Control
       % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
       con = [];
       obj = 0;
+      
+      % Problem parameters
+      %%% Tuning parameters
+      R = 10*eye(1);
+      
+      %%% Constraints -0.2 <= M_yaw <= 0.2
+      h = [0.2 0.2]'; 
+      H = [1 -1]';
+      
+      % Constraints and objective
+      con = (xs == mpc.A*xs + mpc.B*us) + (H*us<=h) + (ref == mpc.C*xs);
+      obj = us'*R*us;
+      
 
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
