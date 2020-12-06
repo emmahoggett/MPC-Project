@@ -24,21 +24,21 @@ classdef MPC_Control_z < MPC_Control
       %   u(:,1) - input to apply to the system
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-      [n,m] = size(mpc.B);
+      [n,h] = size(mpc.B);
       
       % Steady-state targets (Ignore this before Todo 3.3)
       xs = sdpvar(n, 1);
-      us = sdpvar(m, 1);
+      us = sdpvar(h, 1);
       
       % Disturbance estimate (Ignore this before Part 5)
       d_est = sdpvar(1);
 
       % SET THE HORIZON HERE
-      N = 8;
+      N = 10;
       
       % Predicted state and input trajectories
       x = sdpvar(n, N);
-      u = sdpvar(m, N-1);
+      u = sdpvar(h, N-1);
       
 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -52,30 +52,40 @@ classdef MPC_Control_z < MPC_Control
       obj = 0;
       
       
-      % Input constraints 0<=u<=1.5
-      m = [0 1.5 0 1.5 0 1.5  0 1.5]'; 
-      M = [-1 0 0 0;1 0 0 0;...
-           0 -1 0 0;0 1 0 0;...
-           0 0 -1 0;0 0 1 0;...
-           0 0 0 -1;0 0 0 1];
-       
-      % State constraints |alpha| <= 0.035 & |beta| <= 0.035
-      F = [1 0 0 0 0 0 0 0 0 0 0 0;...
-           -1 0 0 0 0 0 0 0 0 0 0 0;...
-           0 1 0 0 0 0 0 0 0 0 0 0;...
-           0 -1 0 0 0 0 0 0 0 0 0 0];
-      f = ones(4,1)*0.035;
-
+      % Problem parameters
+      %%% Tuni
+      %%% A revoir - Justifier %%%
+      Q = mpc.C'*mpc.C;
+      R = 10*eye(h);
+      %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      h = [0.3 0.2]'; 
+      H = [1 -1]';
       
-      con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (M*u(:,1) <= m);
+      % Compute LQR for unconstrained system
+      [K,P,~] = dlqr(mpc.A, mpc.B, Q, R);
+      K = - K; % Note that matlab defines K as -K
+      
+      % Compute the maximal invariant set in closed loop
+      Acl = mpc.A+mpc.B*K;
+      Xf = Polyhedron([H*K],[h]);
+      while 1
+          Xfprev = Xf;
+          F = Xf.A; f = Xf.b;
+          Xf =  Polyhedron([F; F*Acl], [f;f]);
+          if Xf == Xfprev, break; end  
+      end
+      
+      % Constraints and objective
+      con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (H*u(:,1) <= h);
       obj = u(:,1)'*R*u(:,1);
       
       for i = 2:N-1
         con = con + (x(:,i+1) == mpc.A*x(:,i) + mpc.B*u(:,i));
-        con = con + (F*x(:,i) <= f) + (M*u(:,i) <= m);
+        con = con + (H*u(:,i) <= h);
         obj = obj + x(:,i)'*Q*x(:,i) + u(:,i)'*R*u(:,i);
       end
       obj = obj + x(:,N)'*P*x(:,N);
+      con = con + (F*x(:,N) <= f);
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
