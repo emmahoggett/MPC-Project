@@ -40,8 +40,8 @@ classdef MPC_Control_yaw < MPC_Control
             
       % Problem parameters
       %%% Tuning parameters
-      Q = mpc.C'*mpc.C;
-      R = 10*eye(h);
+      Q = mpc.C'*mpc.C+ [0.1 0;0 0];
+      R = 1;
       
       
       %%% Constraints -0.2 <= M_yaw <= 0.2
@@ -62,6 +62,11 @@ classdef MPC_Control_yaw < MPC_Control
           if Xf == Xfprev, break; end  
       end
       
+%       figure(4)
+%       plot(Xf,'color', [0.4660 0.6740 0.1880]);
+%       xlabel('vel\_yaw')
+%       ylabel('yaw')
+      
       % Constraints and objective
       con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (H*u(:,1) <= h);
       obj = u(:,1)'*R*u(:,1);
@@ -78,7 +83,7 @@ classdef MPC_Control_yaw < MPC_Control
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       
       
-      ctrl_opt = optimizer(con, obj, sdpsettings('solver','MOSEK'), ...
+      ctrl_opt = optimizer(con, obj, sdpsettings('solver','gurobi'), ...
         {x(:,1), xs, us}, u(:,1));
     end
     
@@ -120,14 +125,12 @@ classdef MPC_Control_yaw < MPC_Control
       con = (xs == mpc.A*xs + mpc.B*us) + (H*us<=h) + (ref == mpc.C*xs);
       obj = us'*R*us;
       
-
-      
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       
       
       % Compute the steady-state target
-      target_opt = optimizer(con, obj, sdpsettings('solver', 'MOSEK'), ref, {xs, us});
+      target_opt = optimizer(con, obj, sdpsettings('solver', 'gurobi'), ref, {xs, us});
       
     end
   end
