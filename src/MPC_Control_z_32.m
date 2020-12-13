@@ -5,7 +5,7 @@ classdef MPC_Control_z_32 < MPC_Control
   end
   
   methods
-    function mpc = MPC_Control_z(sys, Ts)
+    function mpc = MPC_Control_z_32(sys, Ts)
       mpc = mpc@MPC_Control(sys, Ts);
       
       [mpc.A_bar, mpc.B_bar, mpc.C_bar, mpc.L] = mpc.setup_estimator();
@@ -53,7 +53,7 @@ classdef MPC_Control_z_32 < MPC_Control
       
       % Problem parameters
       %%% Tuning parameters
-      Q = mpc.C'*mpc.C;
+      Q = [0 0; 0 1];
       R = 1;
       
       %%% Constraints -0.2 <= F <= 0.3
@@ -61,37 +61,16 @@ classdef MPC_Control_z_32 < MPC_Control
       H = [1 -1]';
       
       % Compute LQR for unconstrained system
-      [K,P,~] = dlqr(mpc.A, mpc.B, Q, R);
-      K = - K; % Note that matlab defines K as -K
+      [~,P,~] = dlqr(mpc.A, mpc.B, Q, R);
       
-      % Compute the maximal invariant set in closed loop
-      Acl = mpc.A+mpc.B*K;
-      Xf = Polyhedron([H*K],[h]);
-      while 1
-          Xfprev = Xf;
-          F = Xf.A; f = Xf.b;
-          Xf =  Polyhedron([F; F*Acl], [f;f]);
-          if Xf == Xfprev, break; end  
-      end
-      F = Xf.A; f = Xf.b;
       
-      figure(3)
-      plot(Xf,'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\dot{z}$', 'Interpreter','latex','FontSize',15)
-      ylabel('$z$', 'Interpreter','latex','FontSize',15)
-
-     
       % Constraints and objective
-      con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (H*u(:,1) <= h);
-      obj = u(:,1)'*R*u(:,1);
-      
-      for i = 2:N-1
+      for i = 1:N-1
         con = con + (x(:,i+1) == mpc.A*x(:,i) + mpc.B*u(:,i));
-        con = con + (H*u(:,i) <= h);
-        obj = obj + x(:,i)'*Q*x(:,i) + u(:,i)'*R*u(:,i);
+        con = con + (H*(u(:,i)-us(:,1)) <= h - H*us(:,1));
+        obj = obj + (x(:,i)-xs(:,1))'*Q*(x(:,i)-xs(:,1)) + (u(:,i)-us(:,1))'*R*(u(:,i)-us(:,1));
       end
-      obj = obj + x(:,N)'*P*x(:,N);
-      con = con + (F*x(:,N) <= f);
+      obj = obj + (x(:,N)-xs(:,1))'*P*(x(:,N)-xs(:,1));
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

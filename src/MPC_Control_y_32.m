@@ -51,48 +51,16 @@ classdef MPC_Control_y_32 < MPC_Control
       m = [0.035 0.035]';
       
       % Compute LQR for unconstrained system
-      [K,P,~] = dlqr(mpc.A, mpc.B, Q, R);
-      K = - K; % Note that matlab defines K as -K
+      [~,P,~] = dlqr(mpc.A, mpc.B, Q, R);
       
-      % Compute the maximal invariant set in closed loop
-      Acl = mpc.A+mpc.B*K;
-      Xf = Polyhedron([M; H*K],[m;h]);
-      while 1
-          Xfprev = Xf;
-          F = Xf.A; f = Xf.b;
-          Xf =  Polyhedron([F; F*Acl], [f;f]);
-          if Xf == Xfprev, break; end  
-      end
-      F = Xf.A; f = Xf.b;
       
-      figure(2)
-      subplot(2,2,1)
-      plot(Xf.projection(1:2),'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\dot{\alpha}$', 'Interpreter','latex','FontSize',15)
-      ylabel('$\alpha$', 'Interpreter','latex','FontSize',15)
-
-      subplot(2,2,2)
-      plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\alpha$', 'Interpreter','latex','FontSize',15)
-      ylabel('$\dot{y}$', 'Interpreter','latex','FontSize',15)
-
-      subplot(2,2,[3,4])
-      plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\dot{y}$', 'Interpreter','latex','FontSize',15)
-      ylabel('$y$', 'Interpreter','latex','FontSize',15)
-       
       % Constraints and objective
-      con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (H*u(:,1) <= h);
-      obj = u(:,1)'*R*u(:,1);
-      
-      for i = 2:N-1
+      for i = 1:N-1
         con = con + (x(:,i+1) == mpc.A*x(:,i) + mpc.B*u(:,i));
-        con = con + (H*u(:,i) <= h) + (M*x(:,i)<=m);
-        obj = obj + x(:,i)'*Q*x(:,i) + u(:,i)'*R*u(:,i);
+        con = con + (H*(u(:,i)-us(:,1)) <= h - H*us(:,1)) + (M*(x(:,i)-xs(:,1))<= m - M*xs(:,1));
+        obj = obj + (x(:,i)-xs(:,1))'*Q*(x(:,i)-xs(:,1)) + (u(:,i)-us(:,1))'*R*(u(:,i)-us(:,1));
       end
-      obj = obj + x(:,N)'*P*x(:,N);
-      con = con + (F*x(:,N) <= f);
-
+      obj = obj + (x(:,N)-xs(:,1))'*P*(x(:,N)-xs(:,1));
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
