@@ -1,4 +1,4 @@
-classdef MPC_Control_yaw < MPC_Control
+classdef MPC_Control_y_32 < MPC_Control
   
   methods
     % Design a YALMIP optimizer object that takes a steady-state state
@@ -36,17 +36,19 @@ classdef MPC_Control_yaw < MPC_Control
       % WRITE THE CONSTRAINTS AND OBJECTIVE HERE
       con = [];
       obj = 0;
-
-            
+      
       % Problem parameters
       %%% Tuning parameters
-      Q = mpc.C'*mpc.C;
+      Q = mpc.C'*mpc.C ;
       R = 1;
       
-      
-      %%% Constraints -0.2 <= M_yaw <= 0.2
-      h = [0.2 0.2]'; 
+      %%% Constraints -0.3 <= M_alpha <= 0.3
+      h = [0.3 0.3]'; 
       H = [1 -1]';
+      
+      %%% Constraints  |alpha| <= 0.035
+      M = [0 1 0 0;0 -1 0 0];
+      m = [0.035 0.035]';
       
       % Compute LQR for unconstrained system
       [K,P,~] = dlqr(mpc.A, mpc.B, Q, R);
@@ -54,30 +56,43 @@ classdef MPC_Control_yaw < MPC_Control
       
       % Compute the maximal invariant set in closed loop
       Acl = mpc.A+mpc.B*K;
-      Xf = Polyhedron([H*K],[h]);
+      Xf = Polyhedron([M; H*K],[m;h]);
       while 1
           Xfprev = Xf;
           F = Xf.A; f = Xf.b;
           Xf =  Polyhedron([F; F*Acl], [f;f]);
           if Xf == Xfprev, break; end  
       end
+      F = Xf.A; f = Xf.b;
       
-      figure(4)
-      plot(Xf,'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\dot{\gamma}$', 'Interpreter','latex','FontSize',15)
-      ylabel('$\gamma$', 'Interpreter','latex','FontSize',15)
-      
+      figure(2)
+      subplot(2,2,1)
+      plot(Xf.projection(1:2),'color', [0.4660 0.6740 0.1880]);
+      xlabel('$\dot{\alpha}$', 'Interpreter','latex','FontSize',15)
+      ylabel('$\alpha$', 'Interpreter','latex','FontSize',15)
+
+      subplot(2,2,2)
+      plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
+      xlabel('$\alpha$', 'Interpreter','latex','FontSize',15)
+      ylabel('$\dot{y}$', 'Interpreter','latex','FontSize',15)
+
+      subplot(2,2,[3,4])
+      plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
+      xlabel('$\dot{y}$', 'Interpreter','latex','FontSize',15)
+      ylabel('$y$', 'Interpreter','latex','FontSize',15)
+       
       % Constraints and objective
       con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (H*u(:,1) <= h);
       obj = u(:,1)'*R*u(:,1);
       
       for i = 2:N-1
         con = con + (x(:,i+1) == mpc.A*x(:,i) + mpc.B*u(:,i));
-        con = con + (H*u(:,i) <= h);
+        con = con + (H*u(:,i) <= h) + (M*x(:,i)<=m);
         obj = obj + x(:,i)'*Q*x(:,i) + u(:,i)'*R*u(:,i);
       end
       obj = obj + x(:,N)'*P*x(:,N);
       con = con + (F*x(:,N) <= f);
+
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -108,7 +123,7 @@ classdef MPC_Control_yaw < MPC_Control
       ref = sdpvar;            
             
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE       
+      % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
       con = [];
       obj = 0;
@@ -117,17 +132,17 @@ classdef MPC_Control_yaw < MPC_Control
       %%% Tuning parameters
       R = 1;
       
-      %%% Constraints -0.2 <= M_yaw <= 0.2
-      h = [0.2 0.2]'; 
+      %%% Constraints -0.3 <= M_alpha <= 0.3
+      h = [0.3 0.3]'; 
       H = [1 -1]';
       
       % Constraints and objective
       con = (xs == mpc.A*xs + mpc.B*us) + (H*us<=h) + (ref == mpc.C*xs);
       obj = us'*R*us;
       
+      
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      
       
       % Compute the steady-state target
       target_opt = optimizer(con, obj, sdpsettings('solver', 'gurobi'), ref, {xs, us});

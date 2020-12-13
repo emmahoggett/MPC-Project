@@ -53,7 +53,7 @@ classdef MPC_Control_z < MPC_Control
       
       % Problem parameters
       %%% Tuning parameters
-      Q = mpc.C'*mpc.C + [0.1 0;0 0];
+      Q = mpc.C'*mpc.C;
       R = 1;
       
       %%% Constraints -0.2 <= F <= 0.3
@@ -75,10 +75,10 @@ classdef MPC_Control_z < MPC_Control
       end
       F = Xf.A; f = Xf.b;
       
-%       figure(3)
-%       plot(Xf,'color', [0.4660 0.6740 0.1880]);
-%       xlabel('vel\_z')
-%       ylabel('z')
+      figure(3)
+      plot(Xf,'color', [0.4660 0.6740 0.1880]);
+      xlabel('$\dot{z}$', 'Interpreter','latex','FontSize',15)
+      ylabel('$z$', 'Interpreter','latex','FontSize',15)
 
      
       % Constraints and objective
@@ -133,7 +133,7 @@ classdef MPC_Control_z < MPC_Control
       
       % Problem parameters
       %%% Tuning parameters
-      R = 10;
+      R = 1;
       
       %%% Constraints -0.2 <= M_yaw <= 0.2
       h = [0.3 0.2]'; 

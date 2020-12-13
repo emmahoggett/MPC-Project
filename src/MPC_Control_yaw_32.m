@@ -1,4 +1,4 @@
-classdef MPC_Control_yaw < MPC_Control
+classdef MPC_Control_yaw_32 < MPC_Control
   
   methods
     % Design a YALMIP optimizer object that takes a steady-state state

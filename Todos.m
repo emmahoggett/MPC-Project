@@ -49,7 +49,7 @@ rank(obsv(sys_z.A, sys_z.C));   % = 2 - full rank -> observable
 
 rank(ctrb(sys_yaw.A, sys_yaw.B));   % = 2 - full rank -> controllable -> reachable 
 rank(obsv(sys_yaw.A, sys_yaw.C));   % = 2 - full rank -> observable
-%% Design MPC controller - x-direction
+%% Design MPC controller
 
 %%% x-direction %%%
 mpc_x = MPC_Control_x(sys_x, Ts);
@@ -71,32 +71,6 @@ while norm(sol.x(:,end)) > 1e-3 % Simulate until convergence
 
 end
 
-% simulating closed loop    
-% Plotting the results
-figure
-hold on; grid on;
-
-o = ones(1,size(sol.x,2));
-
-subplot(3,1,1)
-hold on; grid on;
-plot((0:size(sol.x,2)-1)*Ts,sol.x(4,:),'-k','markersize',20);
-plot((0:size(sol.x,2)-1)*Ts, ones(size(sol.x,2),1)*0.04,'color', [0.3010 0.7450 0.9330]);
-plot((0:size(sol.x,2)-1)*Ts, -ones(size(sol.x,2),1)*0.04,'color', [0.3010 0.7450 0.9330]);
-
-ylabel('x-Position')
-
-subplot(3,1,2)
-hold on; grid on;
-plot((0:size(sol.x,2)-1)*Ts,sol.x(3,:),'-k','markersize',20);
-ylabel('x-Velocity')
-
-subplot(3,1,3)
-hold on; grid on;
-plot((0:size(sol.u,2)-1)*Ts,sol.u(1,:),'-k','markersize',20);
-ylabel('input u')
-
-%% Design MPC controller - y-direction
 
 %%% y-direction %%%
 mpc_y = MPC_Control_y(sys_y, Ts);
@@ -117,32 +91,6 @@ while norm(sol.y(:,end)) > 1e-3 % Simulate until convergence
     iy = iy + 1;
 end
 
-% simulating closed loop    
-% Plotting the results
-figure
-hold on; grid on;
-
-o = ones(1,size(sol.x,2));
-
-subplot(3,1,1)
-hold on; grid on;
-plot((0:size(sol.y,2)-1)*Ts,sol.y(4,:),'-k','markersize',20);
-plot((0:size(sol.y,2)-1)*Ts, ones(size(sol.y,2),1)*0.04,'color', [0.3010 0.7450 0.9330]);
-plot((0:size(sol.y,2)-1)*Ts, -ones(size(sol.y,2),1)*0.04,'color', [0.3010 0.7450 0.9330]);
-
-ylabel('y-Position')
-
-subplot(3,1,2)
-hold on; grid on;
-plot((0:size(sol.y,2)-1)*Ts,sol.y(3,:),'-k','markersize',20);
-ylabel('y-Velocity')
-
-subplot(3,1,3)
-hold on; grid on;
-plot((0:size(sol.u,2)-1)*Ts,sol.u(1,:),'-k','markersize',20);
-ylabel('input u')
-
-%% Design MPC controller - z-direction
 
 mpc_z = MPC_Control_z(sys_z, Ts);
 
@@ -180,51 +128,19 @@ ylabel('Position[m]')
 xlabel('Time[s]')
 
 
-%% Design MPC controller - z-direction
+%% Todo 3.2 %%
+Ts = 1/5;
+quad = Quad(Ts);
+[xs, us] = quad.trim();
+sys = quad.linearize(xs, us);
+[sys_x, sys_y, sys_z, sys_yaw] = quad.decompose(sys, xs, us);
 
-mpc_yaw = MPC_Control_yaw(sys_yaw, Ts);
+% Design MPC controller
+mpc_x = MPC_Control_x(sys_x, Ts);
 
-yaw0 = [0 pi/4]';
+x_position_reference = [0 0 0 -2];
+x0 = [0 0 0 0];
 
+% Get control inputs with
+ux = mpc_x.get_u(x, x_position_reference)
 
-%z-direction
-sol.yaw(:,1) = yaw0;
-iy = 1;
-
-while norm(sol.yaw(:,end)) > 1e-3 % Simulate until convergence
-    % Solve MPC problem for current state
-    uopt = mpc_yaw.get_u(sol.yaw(:,iy));
-    
-    % Extract the optimal input
-    sol.u(:,iy) = uopt;
-
-    % Apply the optimal input to the system
-    sol.yaw(:,iy+1) = mpc_yaw.A*sol.yaw(:,iy) + mpc_yaw.B*sol.u(:,iy);
-    iy = iy + 1;
-
-end
-
-% simulating closed loop    
-% Plotting the results
-figure
-hold on; grid on;
-
-o = ones(1,size(sol.z,2));
-
-subplot(3,1,1)
-hold on; grid on;
-plot((0:size(sol.yaw,2)-1)*Ts, sol.yaw(2,:),'-k','markersize',20);
-plot((0:size(sol.yaw,2)-1)*Ts, ones(size(sol.yaw,2),1)*0.02*pi/4,'color', [0.3010 0.7450 0.9330]);
-plot((0:size(sol.yaw,2)-1)*Ts, -ones(size(sol.yaw,2),1)*0.02*pi/4,'color', [0.3010 0.7450 0.9330]);
-
-ylabel('z-Position')
-
-subplot(3,1,2)
-hold on; grid on;
-plot((0:size(sol.yaw,2)-1)*Ts,sol.yaw(1,:),'-k','markersize',20);
-ylabel('z-Velocity')
-
-subplot(3,1,3)
-hold on; grid on;
-plot((0:size(sol.u,2)-1)*Ts,sol.u(1,:),'-k','markersize',20);
-ylabel('input u')
