@@ -131,6 +131,36 @@ ylabel('Position[m]')
 xlabel('Time[s]')
 
 
+mpc_yaw = MPC_Control_yaw(sys_yaw, Ts);
+
+yaw0 = [0 pi/4]';
+
+
+%z-direction
+sol.yaw(:,1) = yaw0;
+iyaw = 1;
+
+while norm(sol.yaw(:,end)) > 1e-3 % Simulate until convergence
+    % Solve MPC problem for current state
+    uopt = mpc_yaw.get_u(sol.yaw(:,iyaw));
+    
+    % Extract the optimal input
+    sol.u(:,iyaw) = uopt;
+
+    % Apply the optimal input to the system
+    sol.yaw(:,iyaw+1) = mpc_yaw.A*sol.yaw(:,iyaw) + mpc_yaw.B*sol.u(:,iyaw);
+    iyaw = iyaw + 1;
+
+end
+%%
+figure(6)
+hold on; grid on;
+plot((0:size(sol.yaw,2)-1)*Ts,sol.yaw(2,:));
+plot((0:size(sol.yaw,2)-1)*Ts, ones(size(sol.yaw,2),1)*0.02*pi/4,'-.','color', [0.3010 0.7450 0.9330]);
+plot((0:size(sol.yaw,2)-1)*Ts, -ones(size(sol.yaw,2),1)*0.02*pi/4,'-.','color', [0.3010 0.7450 0.9330]);
+ylabel('Angle[rad]')
+xlabel('Time[s]')
+
 %% Todo 3.2 %%
 clc
 clear
@@ -216,7 +246,7 @@ end
 % simulating closed loop    
 % Plotting the results
 
-figure(6)
+figure(7)
 hold on; grid on;
 plot((0:size(sol.x,2)-1)*Ts,sol.x(4,:));
 plot((0:size(sol.z,2)-1)*Ts, sol.z(2,:));
@@ -249,7 +279,7 @@ while norm(sol.yaw(:,end)-yaw_position_reference) > 1e-2% Simulate until converg
     iyaw = iyaw + 1;
 
 end
-figure(7)
+figure(8)
 hold on; grid on;
 plot((0:size(sol.yaw,2)-1)*Ts,sol.yaw(2,:));
 plot((0:100)*Ts, -ones(101,1)*pi/4*(1-0.02),'-.','color', [0.3010 0.7450 0.9330]);
