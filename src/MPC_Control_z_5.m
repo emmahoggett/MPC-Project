@@ -65,11 +65,11 @@ classdef MPC_Control_z_5 < MPC_Control
       
       
       % Constraints and objective
-      con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (H*(u(:,1)-us(:,1)) <= h - H*us(:,1));
+      con = (x(:,2) == mpc.A*x(:,1) + mpc.B*(u(:,1) + d_est)) + (H*(u(:,1)-us(:,1)) <= h - H*us(:,1));
       obj = (u(:,1)-us(:,1))'*R*(u(:,1)-us(:,1));
      
       for i = 2:N-1
-        con = con + (x(:,i+1) == mpc.A*x(:,i) + mpc.B*u(:,i));
+        con = con + (x(:,i+1) == mpc.A*x(:,i) + mpc.B*(u(:,i) + d_est));
         con = con + (H*(u(:,i)-us(:,1)) <= h - H*us(:,1));
         obj = obj + (x(:,i)-xs(:,1))'*Q*(x(:,i)-xs(:,1)) + (u(:,i)-us(:,1))'*R*(u(:,i)-us(:,1));
       end
