@@ -251,8 +251,8 @@ hold on; grid on;
 plot((0:size(sol.x,2)-1)*Ts,sol.x(4,:));
 plot((0:size(sol.z,2)-1)*Ts, sol.z(2,:));
 plot((0:size(sol.y,2)-1)*Ts,sol.y(4,:));
-plot((0:100)*Ts, -ones(101,1)*2.04,'-.','color', [0.3010 0.7450 0.9330]);
-plot((0:100)*Ts, -ones(101,1)*1.96,'-.','color', [0.3010 0.7450 0.9330]);
+plot((0:45)*Ts, -ones(46,1)*2.04,'-.','color', [0.3010 0.7450 0.9330]);
+plot((0:45)*Ts, -ones(46,1)*1.96,'-.','color', [0.3010 0.7450 0.9330]);
 ylabel('Position[m]')
 xlabel('Time[s]')
 
@@ -282,8 +282,8 @@ end
 figure(8)
 hold on; grid on;
 plot((0:size(sol.yaw,2)-1)*Ts,sol.yaw(2,:));
-plot((0:100)*Ts, -ones(101,1)*pi/4*(1-0.02),'-.','color', [0.3010 0.7450 0.9330]);
-plot((0:100)*Ts, -ones(101,1)*pi/4*(1+0.02),'-.','color', [0.3010 0.7450 0.9330]);
+plot((0:25)*Ts, -ones(26,1)*pi/4*(1-0.02),'-.','color', [0.3010 0.7450 0.9330]);
+plot((0:25)*Ts, -ones(26,1)*pi/4*(1+0.02),'-.','color', [0.3010 0.7450 0.9330]);
 ylabel('Angle[rad]')
 xlabel('Time[s]')
 

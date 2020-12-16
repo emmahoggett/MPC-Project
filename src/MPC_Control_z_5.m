@@ -65,12 +65,16 @@ classdef MPC_Control_z_5 < MPC_Control
       
       
       % Constraints and objective
-      for i = 1:N-1
-        con = con + (x(:,i+1) == mpc.A*x(:,i) + mpc.B*(u(:,i)+d_est));
+      con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (H*(u(:,1)-us(:,1)) <= h - H*us(:,1));
+      obj = (u(:,1)-us(:,1))'*R*(u(:,1)-us(:,1));
+     
+      for i = 2:N-1
+        con = con + (x(:,i+1) == mpc.A*x(:,i) + mpc.B*u(:,i));
         con = con + (H*(u(:,i)-us(:,1)) <= h - H*us(:,1));
         obj = obj + (x(:,i)-xs(:,1))'*Q*(x(:,i)-xs(:,1)) + (u(:,i)-us(:,1))'*R*(u(:,i)-us(:,1));
       end
       obj = obj + (x(:,N)-xs(:,1))'*P*(x(:,N)-xs(:,1));
+      
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -146,7 +150,7 @@ classdef MPC_Control_z_5 < MPC_Control
       A_bar = [A B;0 0 1];
       B_bar = [B; 0];
       C_bar = [C 0];
-      L = [];
+      L = -place(A_bar', C_bar', [0.01, 0.02, 0.03]')
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
