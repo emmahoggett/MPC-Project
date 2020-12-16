@@ -62,10 +62,10 @@ classdef MPC_Control_yaw < MPC_Control
           if Xf == Xfprev, break; end  
       end
       
-      figure(4)
-      plot(Xf,'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\dot{\gamma}$', 'Interpreter','latex','FontSize',15)
-      ylabel('$\gamma$', 'Interpreter','latex','FontSize',15)
+%       figure(4)
+%       plot(Xf,'color', [0.4660 0.6740 0.1880]);
+%       xlabel('$\dot{\gamma}$', 'Interpreter','latex','FontSize',15)
+%       ylabel('$\gamma$', 'Interpreter','latex','FontSize',15)
       
       % Constraints and objective
       con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (H*u(:,1) <= h);

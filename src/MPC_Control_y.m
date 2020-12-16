@@ -65,22 +65,23 @@ classdef MPC_Control_y < MPC_Control
       end
       F = Xf.A; f = Xf.b;
       
-      figure(2)
-      subplot(2,2,1)
-      plot(Xf.projection(1:2),'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\dot{\alpha}$', 'Interpreter','latex','FontSize',15)
-      ylabel('$\alpha$', 'Interpreter','latex','FontSize',15)
+%       figure(2)
+%       subplot(2,2,1)
+%       plot(Xf.projection(1:2),'color', [0.4660 0.6740 0.1880]);
+%       xlabel('$\dot{\alpha}$', 'Interpreter','latex','FontSize',15)
+%       ylabel('$\alpha$', 'Interpreter','latex','FontSize',15)
+% 
+%       subplot(2,2,2)
+%       plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
+%       xlabel('$\alpha$', 'Interpreter','latex','FontSize',15)
+%       ylabel('$\dot{y}$', 'Interpreter','latex','FontSize',15)
+% 
+%       subplot(2,2,[3,4])
+%       plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
+%       xlabel('$\dot{y}$', 'Interpreter','latex','FontSize',15)
+%       ylabel('$y$', 'Interpreter','latex','FontSize',15)
 
-      subplot(2,2,2)
-      plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\alpha$', 'Interpreter','latex','FontSize',15)
-      ylabel('$\dot{y}$', 'Interpreter','latex','FontSize',15)
 
-      subplot(2,2,[3,4])
-      plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\dot{y}$', 'Interpreter','latex','FontSize',15)
-      ylabel('$y$', 'Interpreter','latex','FontSize',15)
-%       
       % Constraints and objective
       con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (H*u(:,1) <= h);
       obj = u(:,1)'*R*u(:,1);

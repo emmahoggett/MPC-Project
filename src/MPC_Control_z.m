@@ -75,10 +75,10 @@ classdef MPC_Control_z < MPC_Control
       end
       F = Xf.A; f = Xf.b;
       
-      figure(3)
-      plot(Xf,'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\dot{z}$', 'Interpreter','latex','FontSize',15)
-      ylabel('$z$', 'Interpreter','latex','FontSize',15)
+%       figure(3)
+%       plot(Xf,'color', [0.4660 0.6740 0.1880]);
+%       xlabel('$\dot{z}$', 'Interpreter','latex','FontSize',15)
+%       ylabel('$z$', 'Interpreter','latex','FontSize',15)
 
      
       % Constraints and objective

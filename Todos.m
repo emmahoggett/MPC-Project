@@ -286,3 +286,22 @@ plot((0:100)*Ts, -ones(101,1)*pi/4*(1-0.02),'-.','color', [0.3010 0.7450 0.9330]
 plot((0:100)*Ts, -ones(101,1)*pi/4*(1+0.02),'-.','color', [0.3010 0.7450 0.9330]);
 ylabel('Angle[rad]')
 xlabel('Time[s]')
+
+
+%% Todo 4.1 %%
+clc
+clear
+close all
+
+Ts = 1/5;
+quad = Quad(Ts);
+[xs, us] = quad.trim();
+sys = quad.linearize(xs, us);
+[sys_x, sys_y, sys_z, sys_yaw] = quad.decompose(sys, xs, us);
+mpc_x = MPC_Control_x_32(sys_x, Ts);
+mpc_y = MPC_Control_y_32(sys_y, Ts);
+mpc_z = MPC_Control_z_32(sys_z, Ts);
+mpc_yaw = MPC_Control_yaw_32(sys_yaw, Ts);
+
+sim = quad.sim(mpc_x, mpc_y, mpc_z, mpc_yaw);
+quad.plot(sim);

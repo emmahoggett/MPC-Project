@@ -66,21 +66,21 @@ classdef MPC_Control_x < MPC_Control
       F = Xf.A; f = Xf.b;
       
       
-      figure(1)
-      subplot(2,2,1)
-      plot(Xf.projection(1:2),'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\dot{\beta}$', 'Interpreter','latex','FontSize',15)
-      ylabel('$\beta$', 'Interpreter','latex','FontSize',15)
-      
-      subplot(2,2,2)
-      plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\beta$', 'Interpreter','latex','FontSize',15)
-      ylabel('$\dot{x}$', 'Interpreter','latex','FontSize',15)
-
-      subplot(2,2,[3,4])
-      plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\dot{x}$', 'Interpreter','latex','FontSize',15)
-      ylabel('$x$', 'Interpreter','latex','FontSize',15)
+%       figure(1)
+%       subplot(2,2,1)
+%       plot(Xf.projection(1:2),'color', [0.4660 0.6740 0.1880]);
+%       xlabel('$\dot{\beta}$', 'Interpreter','latex','FontSize',15)
+%       ylabel('$\beta$', 'Interpreter','latex','FontSize',15)
+%       
+%       subplot(2,2,2)
+%       plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
+%       xlabel('$\beta$', 'Interpreter','latex','FontSize',15)
+%       ylabel('$\dot{x}$', 'Interpreter','latex','FontSize',15)
+% 
+%       subplot(2,2,[3,4])
+%       plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
+%       xlabel('$\dot{x}$', 'Interpreter','latex','FontSize',15)
+%       ylabel('$x$', 'Interpreter','latex','FontSize',15)
 
       
       % Constraints and objective
