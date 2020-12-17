@@ -147,10 +147,10 @@ classdef MPC_Control_z_5 < MPC_Control
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
       
-      A_bar = [A B;0 0 1];
-      B_bar = [B; 0];
-      C_bar = [C 0];
-      L = -place(A_bar', C_bar', [0.01, 0.02, 0.03]')
+      A_bar = [mpc.A mpc.B;0 0 1];
+      B_bar = [mpc.B; 0];
+      C_bar = [mpc.C 0];
+      L = -place(A_bar', C_bar', [0.5, 0.6, 0.7]')'; % revoir pour les pôles
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
