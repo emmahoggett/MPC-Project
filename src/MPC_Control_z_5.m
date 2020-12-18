@@ -150,7 +150,7 @@ classdef MPC_Control_z_5 < MPC_Control
       A_bar = [mpc.A mpc.B;0 0 1];
       B_bar = [mpc.B; 0];
       C_bar = [mpc.C 0];
-      L = -place(A_bar', C_bar', [0.5, 0.6, 0.7]')'; % revoir pour les pôles
+      L = -place(A_bar', C_bar', [0.5, 0.6, 0.7]')'; % utilisez filtre de Kalman
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
