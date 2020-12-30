@@ -147,10 +147,26 @@ classdef MPC_Control_z_5 < MPC_Control
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
       
+      % Check observability of (A,C)
+      Mo = obsv(mpc.A, mpc.C);
+      if (rank(Mo) == 2)
+          fprintf('(A,C) is observable\n')
+      else
+          fprintf('(A,C) is unobservable\n')
+      end
+      
+      %Check rank of sigma = [A-I Bd;C Cd]
+      sigma = [mpc.A-eye(size(mpc.B)) mpc.B; mpc.C 0];
+      if (rank(sigma) == 3)
+          fprintf('Sigma is fully ranked\n')
+      else
+          fprintf('Sigma is not fully ranked\n')
+      end
+      
       A_bar = [mpc.A mpc.B;0 0 1];
       B_bar = [mpc.B; 0];
       C_bar = [mpc.C 0];
-      L = -place(A_bar', C_bar', [0.5, 0.6, 0.7]')'; % utilisez filtre de Kalman
+      L = -place(A_bar', C_bar', [0.01, 0.02, 0.03]')';
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
