@@ -7,7 +7,7 @@ function ctrl= ctrl_NMPC(quad)
 
     % ---- decision variables ------
     X = opti.variable(12,N+1); % state trajectory variables
-    U = opti.variable(4, N);   % control trajectory (throttle, brake)
+    U = opti.variable(4, N);   % cont@(x,ref)eval_ctrl(x,ref,opti,X0,REF,X,U)rol trajectory (throttle, brake)
 
     X0 = opti.parameter(12,1); % initial state
     REF = opti.parameter(4,1); % reference position [x,y,z,yaw]
@@ -15,20 +15,37 @@ function ctrl= ctrl_NMPC(quad)
     %%%%%%%%%%%%%%%%%%%%%%%%
     %%%% YOUR CODE HERE %%%%
     %%%%%%%%%%%%%%%%%%%%%%%%
+    % Continuous-time dynamics
+    f=@(x,u) quad.f(x,u);
 
-    % ---- objective ------
-    opti.minimize(sumsqr(X)+10*sumsqr(U));
+    % Discrete-time model
+    Ts=1/5; 
+    f_discrete=@(x,u) RK4(x,u,Ts,f);
+    
+    % Split the state into its part 
+    [omega,theta,vel,pos]=quad.parse_state(X);
 
-    for k=1:N % loop over control intervals
-      opti.subject_to(X(:,k+1) == quad.f(X(:,k), U(:,k)));
+    % Objective
+    opti.minimize(100*sum((theta(3,:)-REF(4)).^2)+...
+                  100*sum((pos(1,:)-REF(1)).^2)+...
+                  100*sum((pos(2,:)-REF(2)).^2)+...
+                  100*sum((pos(3,:)-REF(3)).^2)+...
+                  75*omega(1,:)*omega(1,:)'+75*omega(2,:)*omega(2,:)'+75*omega(3,:)*omega(3,:)'+...
+                  100*theta(1,:)*theta(1,:)'+100*theta(2,:)*theta(2,:)'+...
+                  75*vel(1,:)*vel(1,:)'+75*vel(2,:)*vel(2,:)'+75*vel(3,:)*vel(3,:)'+...
+                  sumsqr(U));
+ 
+    % Dynamic constraints
+    for i=1:N
+        opti.subject_to(X(:,i+1)==f_discrete(X(:,i),U(:,i)));
     end
 
-    % ---- input/state constraints -----------
-    opti.subject_to(-0.035 <= X(4,:) <= 0.035);     % |alpha| <= 0.035 rad
-    opti.subject_to(-0.035 <= X(5,:) <= 0.035);     % |beta| <= 0.035 rad
-    opti.subject_to(0 <= U <= 1.5);                 % 0 <= u <= 1.5 inputs constraints
+    % ---- path constraints -----------
+    opti.subject_to(-0.035 <= X(4,:) <= 0.035); %alpha condition
+    opti.subject_to(-0.035 <= X(5,:) <= 0.035); %beta condition
+    opti.subject_to(0 <= U <= 1.5);  % control is limited
 
-    % ---- initial conditions --------
+    % ---- boundary conditions --------
     opti.subject_to(X(:,1)==X0);   % use initial position
 
     ctrl = @(x,ref) eval_ctrl(x, ref, opti, X0, REF, X, U);

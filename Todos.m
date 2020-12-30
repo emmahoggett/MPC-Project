@@ -325,3 +325,14 @@ mpc_yaw = MPC_Control_yaw_32(sys_yaw, Ts);
 
 sim = quad.sim(mpc_x, mpc_y, mpc_z, mpc_yaw, BIAS);
 quad.plot(sim);
+
+%% Todos 6.1 %%
+clc
+clear
+close all
+
+quad = Quad();
+CTRL= ctrl_NMPC(quad);
+
+sim = quad.sim(CTRL);
+quad.plot(sim);
