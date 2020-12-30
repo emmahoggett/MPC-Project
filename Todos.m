@@ -26,7 +26,7 @@ sys = quad.linearize(xs, us)        % Linearize the nonlinear model
 sys_transformed = sys * inv(quad.T) % New system is A * x + B * inv(T) * v
 
 %% Todo 2.3 %%
-
+s
 [sys_x, sys_y, sys_z, sys_yaw] = quad.decompose(sys, xs, us)
 
 %% Todo 3.1 %%
