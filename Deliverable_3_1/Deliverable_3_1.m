@@ -1,3 +1,11 @@
+%---------------------------------------------
+%-------------- Deliverable 3.1 --------------
+%---------------------------------------------
+
+% Project : Quadcopter control
+% Authors : Balestrini, Durand, Hoggett
+% 31 dec. 2020
+
 clc
 clear
 close all
