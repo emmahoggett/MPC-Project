@@ -17,7 +17,7 @@ quad = Quad(Ts);
 sys = quad.linearize(xs, us);
 [sys_x, sys_y, sys_z, sys_yaw] = quad.decompose(sys, xs, us);
 % Design MPC controller
-mpc_x = MPC_Control_x_32(sys_x, Ts);
+mpc_x = MPC_Control_x(sys_x, Ts);
 % Get control inputs with
 x0=[0;0;0;0];
 x_position_reference= [0;0;0;-2];
@@ -39,7 +39,7 @@ while norm(sol.x(:,end)-x_position_reference) > 1e-2% Simulate until convergence
 
 end
 
-mpc_y = MPC_Control_y_32(sys_y, Ts);
+mpc_y = MPC_Control_y(sys_y, Ts);
 % Get control inputs with
 y0=[0;0;0;0];
 y_position_reference= [0;0;0;-2];
@@ -63,7 +63,7 @@ end
 
 
 % Design MPC controller
-mpc_z = MPC_Control_z_32(sys_z, Ts);
+mpc_z = MPC_Control_z(sys_z, Ts);
 % Get control inputs with
 z0=[0;0];
 z_position_reference= [0;-2];
@@ -102,7 +102,7 @@ xlabel('Time[s]')
 
 
 % Design MPC controller
-mpc_yaw = MPC_Control_yaw_32(sys_yaw, Ts);
+mpc_yaw = MPC_Control_yaw(sys_yaw, Ts);
 % Get control inputs with
 yaw0=[0;0];
 yaw_position_reference= [0;-pi/4];

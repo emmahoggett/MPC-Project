@@ -1,11 +1,11 @@
-classdef MPC_Control_z_5 < MPC_Control
+classdef MPC_Control_z < MPC_Control
   properties
     A_bar, B_bar, C_bar % Augmented system for disturbance rejection    
     L                   % Estimator gain for disturbance rejection
   end
   
   methods
-    function mpc = MPC_Control_z_5(sys, Ts)
+    function mpc = MPC_Control_z(sys, Ts)
       mpc = mpc@MPC_Control(sys, Ts);
       
       [mpc.A_bar, mpc.B_bar, mpc.C_bar, mpc.L] = mpc.setup_estimator();
@@ -63,18 +63,16 @@ classdef MPC_Control_z_5 < MPC_Control
       % Compute LQR for unconstrained system
       [~,P,~] = dlqr(mpc.A, mpc.B, Q, R);
       
-      
       % Constraints and objective
-      con = (x(:,2) == mpc.A*x(:,1) + mpc.B*(u(:,1) + d_est)) + (H*(u(:,1)-us(:,1)) <= h - H*us(:,1));
+      con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (H*(u(:,1)-us(:,1)) <= h - H*us(:,1));
       obj = (u(:,1)-us(:,1))'*R*(u(:,1)-us(:,1));
      
       for i = 2:N-1
-        con = con + (x(:,i+1) == mpc.A*x(:,i) + mpc.B*(u(:,i) + d_est));
+        con = con + (x(:,i+1) == mpc.A*x(:,i) + mpc.B*u(:,i));
         con = con + (H*(u(:,i)-us(:,1)) <= h - H*us(:,1));
         obj = obj + (x(:,i)-xs(:,1))'*Q*(x(:,i)-xs(:,1)) + (u(:,i)-us(:,1))'*R*(u(:,i)-us(:,1));
       end
       obj = obj + (x(:,N)-xs(:,1))'*P*(x(:,N)-xs(:,1));
-      
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -123,7 +121,7 @@ classdef MPC_Control_z_5 < MPC_Control
       H = [1 -1]';
       
       % Constraints and objective
-      con = (xs == mpc.A*xs + mpc.B*(us+d_est)) + (H*us<=h) + (ref == mpc.C*xs);
+      con = (xs == mpc.A*xs + mpc.B*us) + (H*us<=h) + (ref == mpc.C*xs);
       obj = us'*R*us;
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
@@ -147,26 +145,10 @@ classdef MPC_Control_z_5 < MPC_Control
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
       
-      % Check observability of (A,C)
-      Mo = obsv(mpc.A, mpc.C);
-      if (rank(Mo) == 2)
-          fprintf('(A,C) is observable\n')
-      else
-          fprintf('(A,C) is unobservable\n')
-      end
-      
-      %Check rank of sigma = [A-I Bd;C Cd]
-      sigma = [mpc.A-eye(size(mpc.B)) mpc.B; mpc.C 0];
-      if (rank(sigma) == 3)
-          fprintf('Sigma is fully ranked\n')
-      else
-          fprintf('Sigma is not fully ranked\n')
-      end
-      
-      A_bar = [mpc.A mpc.B;0 0 1];
-      B_bar = [mpc.B; 0];
-      C_bar = [mpc.C 0];
-      L = -place(A_bar', C_bar', [0.01, 0.02, 0.03]')';
+      A_bar = [];
+      B_bar = [];
+      C_bar = [];
+      L = [];
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

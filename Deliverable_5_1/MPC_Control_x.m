@@ -1,4 +1,4 @@
-classdef MPC_Control_y_32 < MPC_Control
+classdef MPC_Control_x < MPC_Control
   
   methods
     % Design a YALMIP optimizer object that takes a steady-state state
@@ -39,14 +39,14 @@ classdef MPC_Control_y_32 < MPC_Control
       
       % Problem parameters
       %%% Tuning parameters
-      Q = mpc.C'*mpc.C ;
+      Q = mpc.C'*mpc.C;
       R = 1;
       
-      %%% Constraints -0.3 <= M_alpha <= 0.3
+      %%% Constraints -0.3 <= M_beta <= 0.3
       h = [0.3 0.3]'; 
       H = [1 -1]';
       
-      %%% Constraints  |alpha| <= 0.035
+      %%% Constraints  |beta| <= 0.035
       M = [0 1 0 0;0 -1 0 0];
       m = [0.035 0.035]';
       
@@ -103,7 +103,7 @@ classdef MPC_Control_y_32 < MPC_Control
       %%% Tuning parameters
       R = 1;
       
-      %%% Constraints -0.3 <= M_alpha <= 0.3
+      %%% Constraints -0.3 <= M_beta <= 0.3
       h = [0.3 0.3]'; 
       H = [1 -1]';
       
