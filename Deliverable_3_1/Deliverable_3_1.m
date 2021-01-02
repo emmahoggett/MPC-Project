@@ -22,6 +22,8 @@ observ_reach(sys_y, 'y');
 observ_reach(sys_z, 'z');
 observ_reach(sys_yaw, 'yaw');
 
+%%% Plot the maximal invariant set and the trajectory of the controller
+plot_graph
 %% Design MPC controller
 
 % ------------ x-direction ------------ 
@@ -48,7 +50,7 @@ yaw0 = [0 pi/4]';
   
 % Plotting the results
 % ------------ along x, y & z-direction ------------ 
-figure(5)
+figure(9)
 hold on; grid on;
 plot((0:size(sol.x,2)-1)*Ts,sol.x(4,:));
 plot((0:size(sol.z,2)-1)*Ts, sol.z(2,:));
@@ -61,7 +63,7 @@ ylabel('Position[m]')
 xlabel('Time[s]')
 
 % ------------ along yaw-direction ------------ 
-figure(6)
+figure(10)
 hold on; grid on;
 plot((0:size(sol.yaw,2)-1)*Ts,sol.yaw(2,:));
 plot((0:size(sol.yaw,2)-1)*Ts, ones(size(sol.yaw,2),1)*0.02*pi/4,'-.',...
