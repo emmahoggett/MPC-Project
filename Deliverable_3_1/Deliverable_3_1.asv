@@ -45,7 +45,8 @@ mpc_yaw = MPC_Control_yaw(sys_yaw, Ts);
 yaw0 = [0 pi/4]';
 [sol.yaw] = computeSolution(mpc_yaw, yaw0);
 
-  
+
+% simulating closed loop    
 % Plotting the results
 % ------------ along x, y & z-direction ------------ 
 figure(5)
@@ -53,20 +54,15 @@ hold on; grid on;
 plot((0:size(sol.x,2)-1)*Ts,sol.x(4,:));
 plot((0:size(sol.z,2)-1)*Ts, sol.z(2,:));
 plot((0:size(sol.y,2)-1)*Ts,sol.y(4,:));
-plot((0:size(sol.x,2)-1)*Ts, ones(size(sol.x,2),1)*0.04,'-.','color', ...
-    [0.3010 0.7450 0.9330]);
-plot((0:size(sol.x,2)-1)*Ts, -ones(size(sol.x,2),1)*0.04,'-.','color', ...
-    [0.3010 0.7450 0.9330]);
+plot((0:size(sol.x,2)-1)*Ts, ones(size(sol.x,2),1)*0.04,'-.','color', [0.3010 0.7450 0.9330]);
+plot((0:size(sol.x,2)-1)*Ts, -ones(size(sol.x,2),1)*0.04,'-.','color', [0.3010 0.7450 0.9330]);
 ylabel('Position[m]')
 xlabel('Time[s]')
 
-% ------------ along yaw-direction ------------ 
 figure(6)
 hold on; grid on;
 plot((0:size(sol.yaw,2)-1)*Ts,sol.yaw(2,:));
-plot((0:size(sol.yaw,2)-1)*Ts, ones(size(sol.yaw,2),1)*0.02*pi/4,'-.',...
-    'color', [0.3010 0.7450 0.9330]);
-plot((0:size(sol.yaw,2)-1)*Ts, -ones(size(sol.yaw,2),1)*0.02*pi/4,'-.',...
-    'color', [0.3010 0.7450 0.9330]);
+plot((0:size(sol.yaw,2)-1)*Ts, ones(size(sol.yaw,2),1)*0.02*pi/4,'-.','color', [0.3010 0.7450 0.9330]);
+plot((0:size(sol.yaw,2)-1)*Ts, -ones(size(sol.yaw,2),1)*0.02*pi/4,'-.','color', [0.3010 0.7450 0.9330]);
 ylabel('Angle[rad]')
 xlabel('Time[s]')

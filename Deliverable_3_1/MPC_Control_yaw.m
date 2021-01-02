@@ -62,10 +62,6 @@ classdef MPC_Control_yaw < MPC_Control
           if Xf == Xfprev, break; end  
       end
       
-      figure(4)
-      plot(Xf,'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\dot{\gamma}$', 'Interpreter','latex','FontSize',15)
-      ylabel('$\gamma$', 'Interpreter','latex','FontSize',15)
       
       % Constraints and objective
       con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (H*u(:,1) <= h);
@@ -113,17 +109,6 @@ classdef MPC_Control_yaw < MPC_Control
       con = [];
       obj = 0;
       
-      % Problem parameters
-      %%% Tuning parameters
-      R = 1;
-      
-      %%% Constraints -0.2 <= M_yaw <= 0.2
-      h = [0.2 0.2]'; 
-      H = [1 -1]';
-      
-      % Constraints and objective
-      con = (xs == mpc.A*xs + mpc.B*us) + (H*us<=h) + (ref == mpc.C*xs);
-      obj = us'*R*us;
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

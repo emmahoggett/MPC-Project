@@ -54,7 +54,7 @@ classdef MPC_Control_x < MPC_Control
       [K,P,~] = dlqr(mpc.A, mpc.B, Q, R);
       K = - K; % Note that matlab defines K as -K
       
-      % Compute the maximal invariant set in closed loop
+      %  ----------- Maximal invariant set -----------
       Acl = mpc.A+mpc.B*K;
       Xf = Polyhedron([M; H*K],[m;h]);
       while 1
@@ -65,25 +65,9 @@ classdef MPC_Control_x < MPC_Control
       end
       F = Xf.A; f = Xf.b;
       
-      
-      figure(1)
-      subplot(2,2,1)
-      plot(Xf.projection(1:2),'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\dot{\beta}$', 'Interpreter','latex','FontSize',15)
-      ylabel('$\beta$', 'Interpreter','latex','FontSize',15)
-      
-      subplot(2,2,2)
-      plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\beta$', 'Interpreter','latex','FontSize',15)
-      ylabel('$\dot{x}$', 'Interpreter','latex','FontSize',15)
-
-      subplot(2,2,[3,4])
-      plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\dot{x}$', 'Interpreter','latex','FontSize',15)
-      ylabel('$x$', 'Interpreter','latex','FontSize',15)
 
       
-      % Constraints and objective
+      % ----------- Constraints and objective -----------
       con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (H*u(:,1) <= h);
       obj = u(:,1)'*R*u(:,1);
       
@@ -129,17 +113,6 @@ classdef MPC_Control_x < MPC_Control
       con = [];
       obj = 0;
       
-      % Problem parameters
-      %%% Tuning parameters
-      R = 1;
-      
-      %%% Constraints -0.3 <= M_beta <= 0.3
-      h = [0.3 0.3]'; 
-      H = [1 -1]';
-      
-      % Constraints and objective
-      con = (xs == mpc.A*xs + mpc.B*us) + (H*us<=h) + (ref == mpc.C*xs);
-      obj = us'*R*us;
       
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 

@@ -65,21 +65,6 @@ classdef MPC_Control_y < MPC_Control
       end
       F = Xf.A; f = Xf.b;
       
-      figure(2)
-      subplot(2,2,1)
-      plot(Xf.projection(1:2),'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\dot{\alpha}$', 'Interpreter','latex','FontSize',15)
-      ylabel('$\alpha$', 'Interpreter','latex','FontSize',15)
-
-      subplot(2,2,2)
-      plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\alpha$', 'Interpreter','latex','FontSize',15)
-      ylabel('$\dot{y}$', 'Interpreter','latex','FontSize',15)
-
-      subplot(2,2,[3,4])
-      plot(Xf.projection(2:3),'color', [0.4660 0.6740 0.1880]);
-      xlabel('$\dot{y}$', 'Interpreter','latex','FontSize',15)
-      ylabel('$y$', 'Interpreter','latex','FontSize',15)
 
 
       % Constraints and objective
@@ -129,17 +114,6 @@ classdef MPC_Control_y < MPC_Control
       con = [];
       obj = 0;
       
-      % Problem parameters
-      %%% Tuning parameters
-      R = 1;
-      
-      %%% Constraints -0.3 <= M_alpha <= 0.3
-      h = [0.3 0.3]'; 
-      H = [1 -1]';
-      
-      % Constraints and objective
-      con = (xs == mpc.A*xs + mpc.B*us) + (H*us<=h) + (ref == mpc.C*xs);
-      obj = us'*R*us;
       
       
       % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE 
