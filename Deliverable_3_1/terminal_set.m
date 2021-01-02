@@ -1,8 +1,10 @@
 function Xf = terminal_set(mpc, H, h , M, m)
 %TERMINAL_SET Compute the maximal invariant set
 %   - mpc: MPC controller
-%   - H: 
-       % Problem parameters
+%   - H & h: input constraints
+%   - M & m: state constraints
+
+      % Problem parameters
       %%% Tuning parameters
       Q = mpc.C'*mpc.C;
       R = 1;
