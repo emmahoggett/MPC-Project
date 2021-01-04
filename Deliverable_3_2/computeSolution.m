@@ -1,4 +1,4 @@
-function [sol] = computeSolution(mpc_sys, x0, xref)
+function [solx, solu] = computeSolution(mpc_sys, x0, xref)
     % Compute the displacement along a direction of the quadcopter
     %   - mpc_sys : MPC system -
     %   - x0 : initial position -
@@ -19,5 +19,6 @@ function [sol] = computeSolution(mpc_sys, x0, xref)
         i = i + 1;
         
     end
-    sol = sol.x;
+    solx = sol.x;
+    solu = sol.u;
 end

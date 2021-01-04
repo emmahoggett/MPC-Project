@@ -3,7 +3,7 @@ function ctrl= ctrl_NMPC(quad)
     import casadi.*
 
     opti = casadi.Opti();   % Optimization problem 
-    N = 40;                 % MPC horizon [SET THIS VARIABLE]
+    N = 20;                 % MPC horizon [SET THIS VARIABLE]
 
     % ---- decision variables ------
     X = opti.variable(12,N+1); % state trajectory variables
@@ -26,9 +26,9 @@ function ctrl= ctrl_NMPC(quad)
     [omega,theta,vel,pos]=quad.parse_state(X);
 
     % Objective
-    opti.minimize(sumsqr(pos(1:3,:)-REF(1:3))+sumsqr(theta(3,:)-REF(4))+...
+    opti.minimize(10*sumsqr(pos(1:3,:)-REF(1:3))+sumsqr(theta(3,:)-REF(4))+...
                   0.6*sumsqr(omega(1:3,:))+ 0.6*sumsqr(theta(1:2,:))+...
-                  0.6*sumsqr(vel)+ sumsqr(U));
+                  0.6*sumsqr(vel(1:2,:))+ 15*sumsqr(vel(3,:))+ 0.1*sumsqr(U));
  
     % Dynamic constraints
     for i=1:N
@@ -46,7 +46,8 @@ function ctrl= ctrl_NMPC(quad)
     ctrl = @(x,ref) eval_ctrl(x, ref, opti, X0, REF, X, U);
 end
 
-function u = eval_ctrl(x, ref, opti, X0, REF, X, U) % ???? Set the initial state and reference ???? 
+function u = eval_ctrl(x, ref, opti, X0, REF, X, U) 
+    % ---- Set the initial state and reference ---- 
     opti.set_value(X0, x);
     opti.set_value(REF, ref);
 

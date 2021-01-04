@@ -34,7 +34,7 @@ classdef MPC_Control_z < MPC_Control
       d_est = sdpvar(1);
 
       % SET THE HORIZON HERE
-      N = 40;
+      N = 20;
       
       % Predicted state and input trajectories
       x = sdpvar(n, N);
@@ -53,8 +53,9 @@ classdef MPC_Control_z < MPC_Control
       
       % Problem parameters
       %%% Tuning parameters
-      Q = [0 0; 0 1];
-      R = 1;
+      Q = mpc.C'*mpc.C;
+      Q(1,1) = 0.1;
+      R = 0.1;
       
       %%% Constraints -0.2 <= F <= 0.3
       h = [0.3 0.2]'; 
@@ -116,9 +117,9 @@ classdef MPC_Control_z < MPC_Control
       
       % Problem parameters
       %%% Tuning parameters
-      R = 1;
+      R = 0.1;
       
-      %%% Constraints -0.2 <= M_yaw <= 0.2
+      %%% Constraints -0.2 <= F <= 0.3
       h = [0.3 0.2]'; 
       H = [1 -1]';
       
