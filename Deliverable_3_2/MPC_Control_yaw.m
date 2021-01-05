@@ -38,7 +38,7 @@ classdef MPC_Control_yaw < MPC_Control
       obj = 0;
 
             
-      % Problem parameters
+      % ----------- Problem parameters -----------
       %%% Tuning parameters
       Q = mpc.C'*mpc.C;
       Q(1,1) = 0.1;
@@ -49,11 +49,11 @@ classdef MPC_Control_yaw < MPC_Control
       h = [0.2 0.2]'; 
       H = [1 -1]';
       
-      % Compute LQR for unconstrained system
+      % ----------- Compute LQR for unconstrained system -----------
       [~,P,~] = dlqr(mpc.A, mpc.B, Q, R);
       
       
-      % Constraints and objective
+      % ----------- Constraints and objective -----------
       con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (H*(u(:,1)-us(:,1)) <= h - H*us(:,1));
       obj = (u(:,1)-us(:,1))'*R*(u(:,1)-us(:,1));
      
@@ -98,7 +98,7 @@ classdef MPC_Control_yaw < MPC_Control
       con = [];
       obj = 0;
       
-      % Problem parameters
+      % ----------- Problem parameters -----------
       %%% Tuning parameters
       R = 0.1;
       
@@ -106,7 +106,7 @@ classdef MPC_Control_yaw < MPC_Control
       h = [0.2 0.2]'; 
       H = [1 -1]';
       
-      % Constraints and objective
+      % ----------- Constraints and objective -----------
       con = (xs == mpc.A*xs + mpc.B*us) + (H*us<=h) + (ref == mpc.C*xs);
       obj = us'*R*us;
       

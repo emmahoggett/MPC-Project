@@ -20,7 +20,7 @@ classdef MPC_Control_x < MPC_Control
       us = sdpvar(h, 1);
       
       % SET THE HORIZON HERE
-      N = 40;
+      N = 20;
       
       % Predicted state and input trajectories
       x = sdpvar(n, N);
@@ -37,7 +37,7 @@ classdef MPC_Control_x < MPC_Control
       con = [];
       obj = 0;
       
-      % Problem parameters
+      % ----------- Problem parameters -----------
       %%% Tuning parameters
       Q = mpc.C'*mpc.C;
       Q(1,1) = 0.1; Q(2,2) = 0.1; Q(3,3) = 0.1;
@@ -51,7 +51,7 @@ classdef MPC_Control_x < MPC_Control
       H = [0 1 0 0;0 -1 0 0];
       h = [0.035 0.035]';
       
-      % Compute LQR for unconstrained system
+      % ----------- Compute LQR for unconstrained system -----------
       [K,P,~] = dlqr(mpc.A, mpc.B, Q, R);
       K = - K; % Note that matlab defines K as -K
       
