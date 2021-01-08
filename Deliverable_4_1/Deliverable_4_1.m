@@ -22,5 +22,5 @@ mpc_yaw = MPC_Control_yaw(sys_yaw, Ts);
 
 sim = quad.sim(mpc_x, mpc_y, mpc_z, mpc_yaw);
 quad.plot(sim);
-% view([0 0])
+%  view([90 0])
 % view([0 90])
