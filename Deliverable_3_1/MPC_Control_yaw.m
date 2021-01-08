@@ -38,7 +38,7 @@ classdef MPC_Control_yaw < MPC_Control
       obj = 0;
 
             
-      % Problem parameters
+      % ----------- Problem parameters -----------
       %%% Tuning parameters
       Q = mpc.C'*mpc.C;
       Q(1,1) = 0.1;
@@ -49,7 +49,7 @@ classdef MPC_Control_yaw < MPC_Control
       m = [0.2 0.2]'; 
       M = [1 -1]';
       
-      % Compute LQR for unconstrained system
+      % ----------- Compute LQR for unconstrained system -----------
       [K,Qf,~] = dlqr(mpc.A, mpc.B, Q, R);
       K = - K; % Note that matlab defines K as -K
       

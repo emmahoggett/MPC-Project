@@ -51,7 +51,7 @@ classdef MPC_Control_z < MPC_Control
       con = [];
       obj = 0;
       
-      % Problem parameters
+      % ----------- Problem parameters -----------
       %%% Tuning parameters
       Q = mpc.C'*mpc.C;
       Q(1,1) = 0.1;
@@ -61,11 +61,11 @@ classdef MPC_Control_z < MPC_Control
       m = [0.3; 0.2]; 
       M = [1; -1];
       
-      % Compute LQR for unconstrained system
+      % ----------- Compute LQR for unconstrained system -----------
       [K,P,~] = dlqr(mpc.A, mpc.B, Q, R);
       K = - K; % Note that matlab defines K as -K
       
-      % Compute the maximal invariant set in closed loop
+      % ----------- Compute the maximal invariant set -----------
       Acl = [mpc.A+mpc.B*K];
       Xf = polytope([M*K],[m]);
       while 1
@@ -80,7 +80,7 @@ classdef MPC_Control_z < MPC_Control
      [Ff,ff] = double(Xf);
 
      
-      % Constraints and objective
+      % ----------- Constraints and objective -----------
       con = (x(:,2) == mpc.A*x(:,1) + mpc.B*u(:,1)) + (M*u(:,1) <= m);
       obj = u(:,1)'*R*u(:,1);
       

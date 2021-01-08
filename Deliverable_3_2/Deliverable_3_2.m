@@ -39,7 +39,7 @@ z0=[0;0]; z_position_reference= [0;-2];
 % ----------- Design MPC controller yaw -----------
 mpc_yaw = MPC_Control_yaw(sys_yaw, Ts);
 % Initial condition and reference
-yaw0=[0;0]; yaw_position_reference = [0;-pi/4];
+yaw0=[0;0]; yaw_position_reference = [0;pi/4];
 [sol.yaw, solyaw.u] = computeSolution(mpc_yaw, yaw0, yaw_position_reference);
 
 % simulating closed loop    
