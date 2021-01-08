@@ -8,7 +8,7 @@
 
 clc
 clear
-close all
+close
 
 quad = Quad();
 CTRL= ctrl_NMPC(quad);

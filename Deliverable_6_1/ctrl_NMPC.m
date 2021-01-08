@@ -26,18 +26,21 @@ function ctrl= ctrl_NMPC(quad)
     [omega,theta,vel,pos]=quad.parse_state(X);
 
     % Objective
-    opti.minimize(10*sumsqr(pos(1:3,:)-REF(1:3))+sumsqr(theta(3,:)-REF(4))+...
-                  0.6*sumsqr(omega(1:3,:))+ 0.6*sumsqr(theta(1:2,:))+...
-                  0.6*sumsqr(vel(1:2,:))+ 15*sumsqr(vel(3,:))+ 0.1*sumsqr(U));
- 
+
+     opti.minimize(30*sumsqr(pos(1:3,:)-REF(1:3)) +...
+                   30*sumsqr(theta(3,:)-REF(4)) +...
+                    1*sumsqr(omega(1:3,:)) +...
+                    1*sumsqr(theta(1:2,:)) +...
+                    5*sumsqr(vel(1:2,:)) +...
+                   40*sumsqr(vel(3,:)) +...
+                  0.1*sumsqr(U));
+
     % Dynamic constraints
     for i=1:N
         opti.subject_to(X(:,i+1)==f_discrete(X(:,i),U(:,i)));
     end
 
     % ---- path constraints -----------
-    opti.subject_to(-0.035 <= X(4,:) <= 0.035); %alpha condition
-    opti.subject_to(-0.035 <= X(5,:) <= 0.035); %beta condition
     opti.subject_to(0 <= U <= 1.5);  % control is limited
 
     % ---- boundary conditions --------
