@@ -3,7 +3,7 @@
 
 ### Description
 <!--- Modify this section --->
-This project's aim is to control a quadcopter through model predictive control methods. The first approch is by a linearization of the system and the second approach use non linear model predictive control.
+This project aims to control a quadcopter through model predictive control methods. The first approach is by a linearization of the system and the second approach use non-linear model predictive control.
 At the end of the project, it was noticed that the second approach reach better performances, yet the computations take more time then the linearization method.
 
 
@@ -16,7 +16,7 @@ This version was designed for Matlab 2020a or higher. To run the code for each d
 ### Prerequisites
 
 #### Libraries
-The following librairies are used:
+The following libraries are used:
 * [YALMIP](https://yalmip.github.io/) R20200930, available through the installation of MPT3
 * [Casadi](https://web.casadi.org/get/) v3.5.5 for Matlab
 * [MPT3](https://www.mpt3.org/Main/Installation): run [install_mpt3.m](https://www.mpt3.org/Main/Installation?action=download&upname=install_mpt3.m) in Matlab
@@ -25,7 +25,7 @@ The following librairies are used:
 
 #### Code 
 <!--- Modify this section --->
-Each folder correspond to the deliverable name.
+Each folder corresponds to the deliverable name.
 
 
 
